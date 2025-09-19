@@ -2,23 +2,29 @@ import {
   BarChart2,
   FileText,
   LayoutDashboard,
-  LogOut,
   Settings,
-  Users
+  Users,
+  type LucideIcon
 } from "lucide-react";
-import { useState } from "react";
+import React, { type PropsWithChildren } from "react";
 import {
-  Link,
+  Outlet,
   Route,
   BrowserRouter as Router,
-  Routes,
-  useLocation,
+  Routes
 } from "react-router-dom";
-import { Dashboard } from "./Dashboard";
+import MobileHeader from "./components/MobileHeader";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./pages/Dashboard";
 
-// Navigation items config
-const navItems = [
+export type NavItem = {
+  name: string;
+  icon: LucideIcon;
+  path: string;
+};
 
+
+const navItems: NavItem[] = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/" },
   { name: "Invoices", icon: FileText, path: "/invoices" },
   { name: "Clients", icon: Users, path: "/clients" },
@@ -26,115 +32,27 @@ const navItems = [
   { name: "Settings", icon: Settings, path: "/settings" },
 ];
 
-function Sidebar() {
-  const location = useLocation();
+
+
+
+
+
+function Layout({ children }: PropsWithChildren) {
 
   return (
-    <div className="hidden md:flex fixed top-0 left-0 h-screen w-64 md:bg-[#fceefb] bg-white shadow flex-col">
-      {/* Logo */}
-      <h1 className="text-2xl font-bold text-[#6a4fc6] p-6">Sparkonomy</h1>
+    <div className="flex h-svh overflow-hidden">
 
-      {/* Nav */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
-        {navItems.map(({ name, icon: Icon, path }) => {
-          const active = location.pathname === path;
-          return (
-            <Link
-              key={name}
-              to={path}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg ${
-                active
-                  ? "bg-indigo-100 text-[#6a4fc6] font-semibold"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              {name}
-            </Link>
-          );
-        })}
-      </nav>
+      <Sidebar navItems={navItems} />
 
-      {/* Only Logout in desktop bottom */}
-      <div className="px-4 py-4">
-        <Link
-          to="/logout"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#6a4fc6] text-white hover:bg-gray-100"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function MobileHeader() {
-  const location = useLocation();
-  const activeItem = navItems.find((item) => item.path === location.pathname);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  return (
-    <div className="md:hidden fixed top-0 left-0 right-0 bg-[#fceefb] flex items-center justify-between px-4 py-3 z-40">
-      {/* Logo */}
-      <h1 className="text-2xl font-bold text-[#444CD3]">S</h1>
-
-      {/* Active Page */}
-      <h2 className="text-lg font-semibold">{activeItem?.name || "Page"}</h2>
-
-      {/* Avatar */}
-      <div className="relative">
-        <button
-          onClick={() => setMenuOpen((prev) => !prev)}
-          className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold"
-        >
-            <figure>
-          <img src="/Avatar.png" alt="" className="" />
-        </figure>
-        </button>
-
-        {/* Dropdown */}
-        {menuOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg py-2 z-50">
-            {navItems.map(({ name, icon: Icon, path }) => (
-              <Link
-                key={name}
-                to={path}
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-              >
-                <Icon className="w-4 h-4" />
-                {name}
-              </Link>
-            ))}
-            <Link
-              to="/logout"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Layout({ children }) {
-  return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Content Area */}
+    
       <div className="flex-1 flex flex-col md:ml-64">
-        {/* Mobile Header */}
-        <MobileHeader />
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-0 py-6 md:bg-white bg-[#fceefb] mt-6 rounded-t-2xl md:rounded-none md:mt-0">
+        <MobileHeader navItems={navItems} />
+
+    
+        <main className="flex-1 overflow-y-auto px-0 py-6 md:bg-white bg-[#fceefb] mt-14 md:mt-0 rounded-t-2xl md:rounded-none">
+      
+          <Outlet />
           {children}
         </main>
       </div>
@@ -142,42 +60,44 @@ function Layout({ children }) {
   );
 }
 
-// Pages
-function HomePage() {
-  return <h2 className="text-xl font-semibold">Home Page</h2>;
-}
-function DashboardPage() {
-  return <Dashboard />;
-}
-function InvoicesPage() {
-  return <h2 className="text-xl font-semibold">Invoices Page</h2>;
-}
-function ClientsPage() {
-  return <h2 className="text-xl font-semibold">Clients Page</h2>;
-}
-function ReportsPage() {
-  return <h2 className="text-xl font-semibold">Reports Page</h2>;
-}
-function SettingsPage() {
-  return <h2 className="text-xl font-semibold">Settings Page</h2>;
-}
-function LogoutPage() {
-  return <h2 className="text-xl font-semibold">You have been logged out</h2>;
-}
 
-export default function App() {
+
+
+const DashboardPage: React.FC = () => <Dashboard />;
+
+const InvoicesPage: React.FC = () => (
+  <h2 className="text-xl font-semibold">Invoices Page</h2>
+);
+
+const ClientsPage: React.FC = () => (
+  <h2 className="text-xl font-semibold">Clients Page</h2>
+);
+
+const ReportsPage: React.FC = () => (
+  <h2 className="text-xl font-semibold">Reports Page</h2>
+);
+
+const SettingsPage: React.FC = () => (
+  <h2 className="text-xl font-semibold">Settings Page</h2>
+);
+
+const LogoutPage: React.FC = () => (
+  <h2 className="text-xl font-semibold">You have been logged out</h2>
+);
+
+export default function App(){
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
+      <Routes>
+        <Route element={<Layout />}> 
+          <Route index element={<DashboardPage />} />
           <Route path="/invoices" element={<InvoicesPage />} />
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/logout" element={<LogoutPage />} />
-        </Routes>
-      </Layout>
+        </Route>
+      </Routes>
     </Router>
   );
 }

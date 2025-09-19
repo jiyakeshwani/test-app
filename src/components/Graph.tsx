@@ -30,38 +30,25 @@ const IncomeTrend = () => {
       <div className="w-full h-64 sm:h-80">
         <ResponsiveContainer>
           <ComposedChart data={data}>
-            {/* Grid */}
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-
-            {/* X Axis */}
             <XAxis dataKey="month" tick={{ fill: "#6B7280" }} />
-
-            {/* Left Y Axis (Income) */}
             <YAxis
               yAxisId="left"
               tick={{ fill: "#6B7280" }}
               tickFormatter={(value) => `$${value / 1000}k`}
             />
-
-            {/* Right Y Axis (Growth %) */}
             <YAxis
               yAxisId="right"
               orientation="right"
               tick={{ fill: "#6B7280" }}
               tickFormatter={(value) => `${value}%`}
             />
-
-            {/* Tooltip */}
             <Tooltip
               formatter={(value, name) =>
                 name === "income" ? `$${value}` : `${value}%`
               }
             />
-
-            {/* Legend */}
             <Legend />
-
-            {/* Bars for income */}
             <Bar
               yAxisId="left"
               dataKey="income"
@@ -69,8 +56,6 @@ const IncomeTrend = () => {
               fill="#A855F7"
               name="income"
             />
-
-            {/* Line for momGrowth */}
             <Line
               yAxisId="right"
               type="monotone"
